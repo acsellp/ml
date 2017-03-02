@@ -23,10 +23,11 @@ int		generate(t_tree *h, t_room *r, t_rlist *list)
 	
 		h->head->srch = 1;
 		ad = rl->adia_list;
+		h->branch = (t_tree*)malloc(sizeof(t_tree) * (nr_ad + 1));
 		while (ad)
 		{
 			bra = (t_branch*)malloc(sizeof(t_branch));
-			bra->room = ad->room;
+			bra->head = ad->room;
 			bra->next = h->branch;
 			h->branch = bra;
 			generate(bra, ad->room, list);
