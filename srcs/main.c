@@ -10,7 +10,7 @@ void	print(t_rlist *list)
 	r = list;
 	while (r)
 	{
-		ft_printf("\nName:%s\nx:%d\ny:%d\nstat:%d\n",r->room.name,r->room.x,r->room.y,r->room.stat);
+		ft_printf("\nName:%s\nx:%d\ny:%d\nstat:%d\nants:%d\n",r->room.name,r->room.x,r->room.y,r->room.stat,r->room.ants);
 		ft_printf("Adiacent list: ");
 		ad = r->adia_list;
 		while (ad && ++n)
@@ -72,7 +72,7 @@ t_rlist	*find_room(t_rlist **lst, char *name, t_byte stat)
 	return (r);
 }
 
-void	new_room(t_rlist **lst, char **rp, t_byte st)
+void	new_room(t_rlist **lst, char **rp, t_byte st, int ants)
 {
 	t_rlist *tm;
 	t_rlist	*n;
@@ -85,6 +85,8 @@ void	new_room(t_rlist **lst, char **rp, t_byte st)
 		(*lst)->room.x = ft_atoi(rp[1]);
 		(*lst)->room.y = ft_atoi(rp[2]);
 		(*lst)->room.stat = st;
+		(*lst)->room.srch = 0;
+		(*lst)->room.ants = ants;
 		(*lst)->adia_list = NULL;
 		(*lst)->next = NULL;
 		return ;
@@ -94,6 +96,8 @@ void	new_room(t_rlist **lst, char **rp, t_byte st)
 	n->room.x = ft_atoi(rp[1]);
 	n->room.y = ft_atoi(rp[2]);
 	n->room.stat = st;
+	n->room.srch = 0;
+	n->room.ants = ants;
 	n->adia_list = NULL;
 	tm = *lst;
 	while (tm)
@@ -149,7 +153,7 @@ void	add_links(char *in, t_rlist **lst)
 	}
 }
 
-void	add_rooms(char *in, t_byte st, t_rlist **lst)
+void	add_rooms(char *in, t_byte st, t_rlist **lst, int ants)
 {
 	char	**rp;
 	size_t	i;
@@ -160,24 +164,26 @@ void	add_rooms(char *in, t_byte st, t_rlist **lst)
 	while (rp[i++]);
 	(i != 4) ? input_error(&in, &rp, lst) : 0;
 	i = 0;
-	while (rp[1][i] || rp[2][i])
+	while (rp[1][i] != '\0')
 	{
 		if (rp[1][i] && !ft_isdigit(rp[1][i]))
 			input_error(&in, &rp, lst);
+		i++;
+	}
+	i = 0;
+	while (rp[2][i] != '\0')
+	{
 		if (rp[2][i] && !ft_isdigit(rp[2][i]))
 			input_error(&in, &rp, lst);
 		i++;
 	}
-	new_room(lst, rp, st);
+	new_room(lst, rp, st, ants);
 	while (*rp)
 	{
 		free(*rp);
 		rp++;
 	}
 }
-/*
-**	coord checker
-*/
 
 int		main(int ac, char **av)
 {
@@ -188,6 +194,7 @@ int		main(int ac, char **av)
 
 	if (get_next_line(0, &ants) <= 0)
 		input_error(NULL, NULL, NULL);
+	
 	ft_memset(&_, 0, sizeof(t_var));
 	lst = NULL;
 	while (get_next_line(0, &input) > 0)
@@ -205,7 +212,7 @@ int		main(int ac, char **av)
 			if (*(input + 1) != '-')
 			{
 				(_.room == 0 && _.link == 1) ? input_error(&input, NULL, &lst) : 0;
-				add_rooms(input, _.stat, &lst);
+				add_rooms(input, _.stat, &lst, (_.stat == START) ? ft_atoi(ants) : 0);
 				(_.stat != ROOM) ? _.stat = ROOM : 0;
 				_.room = 1;
 			}
