@@ -22,6 +22,7 @@ int		generate(t_tree *h, t_room *r, t_rlist *list)
 	{
 		rl = find_room(&list, r->name, UNDEF);
 		//h = new_node(&rl->room);
+		// new branch list nr_ad ...
 		h->head->srch = 1;
 		ad = rl->adia_list;
 		while (ad)

@@ -86,6 +86,7 @@ void	new_room(t_rlist **lst, char **rp, t_byte st, int ants)
 		(*lst)->room.y = ft_atoi(rp[2]);
 		(*lst)->room.stat = st;
 		(*lst)->room.srch = 0;
+		(*lst)->nr_ad = 0;
 		(*lst)->room.ants = ants;
 		(*lst)->adia_list = NULL;
 		(*lst)->next = NULL;
@@ -98,6 +99,7 @@ void	new_room(t_rlist **lst, char **rp, t_byte st, int ants)
 	n->room.stat = st;
 	n->room.srch = 0;
 	n->room.ants = ants;
+	n->nr_ad = 0;
 	n->adia_list = NULL;
 	tm = *lst;
 	while (tm)
@@ -128,11 +130,13 @@ void	new_link(t_rlist **lst, char **rp)
 	a1->room = &rm2->room;
 	a1->next = rm1->adia_list;
 	rm1->adia_list = a1;
+	rm1->nr_ad++;
 	
 	a2 = (t_adlist*)malloc(sizeof(t_adlist));
 	a2->room = &rm1->room;
 	a2->next = rm2->adia_list;
 	rm2->adia_list = a2;
+	rm2->nr_ad++;
 }
 
 void	add_links(char *in, t_rlist **lst)
