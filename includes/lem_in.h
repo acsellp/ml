@@ -39,15 +39,11 @@ typedef struct		s_rlist
 	int				nr_ad;
 	struct s_rlist	*next;
 }					t_rlist;
-typedef struct		s_branch
-{
-	t_room			*room;
-	struct s_branch	*next;
-}					t_branch;
+
 typedef struct		s_tree
 {
-	t_room			*head;
-	t_branch		*branch;
+	t_rlist			*head;
+	struct s_tree	*branch;
 }					t_tree;
 
 /*

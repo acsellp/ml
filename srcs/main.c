@@ -5,13 +5,13 @@ void	print(t_rlist *list)
 	t_rlist *r;
 	t_adlist *ad;
 	int	n;
-	
+
 	n = 0;
 	r = list;
 	while (r)
 	{
 		ft_printf("\nName:%s\nx:%d\ny:%d\nstat:%d\nants:%d\n",r->room.name,r->room.x,r->room.y,r->room.stat,r->room.ants);
-		ft_printf("Adiacent list: ");
+		ft_printf("Adiacent list[%d]: ", r->nr_ad);
 		ad = r->adia_list;
 		while (ad && ++n)
 		{
