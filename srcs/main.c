@@ -1,84 +1,134 @@
 #include "lem_in.h"
 
-int		input_error(char **in, char ***param)
+void	print(t_rlist *list)
 {
+	t_rlist *r;
+	t_adlist *ad;
+	int	n;
+	
+	n = 0;
+	r = list;
+	while (r)
+	{
+		ft_printf("\nName:%s\nx:%d\ny:%d\nstat:%d\n",r->room.name,r->room.x,r->room.y,r->room.stat);
+		ft_printf("Adiacent list: ");
+		ad = r->adia_list;
+		while (ad && ++n)
+		{
+			ft_printf("%s ->",ad->room->name);
+			ad = ad->next;
+		}
+		r = r->next;
+		ft_printf("\n\n\n");
+	}
+	ft_printf("\n%d links\n\n", n / 2);
+}
+
+int		input_error(char **in, char ***param, t_rlist **list)
+{
+	t_rlist		*lst;
+	t_adlist	*ad;
+	
 	ft_putstr_fd("ERROR\n", 2);
-	if (in && *in)
-		free(*in);
+	(in && *in) ? free(*in) : 0;
 	if (param && *param)
 		while (*(*param))
 		{
 			free(*(*param));
 			(*param)++;
 		}
+	while (*list)
+	{
+		lst = *list;
+		*list = (*list)->next;
+		while (lst->adia_list)
+		{
+			ad = lst->adia_list;
+			lst->adia_list = lst->adia_list->next;
+			free(ad);
+		}
+		free(lst->room.name);
+		free(lst);
+	}
 	exit(1);
 	return (0);
 }
 
-t_rlist	*find_room(t_rlist **lst, char *name)
+t_rlist	*find_room(t_rlist **lst, char *name, t_byte stat)
 {
 	t_rlist	*r;
 	
-	if (*room == NULL)
+	if (*lst == NULL)
 		return (NULL);
-	r = *room;
-	while (r && !ft_strcmp(name, r->name))
+	r = *lst;
+	while (r)
+	{
+		if (stat == UNDEF && ft_strcmp(name, r->room.name) == 0)
+			break ;
+		else if (stat != UNDEF && r->room.stat == stat)
+			break ;
 		r = r->next;
+	}
 	return (r);
 }
 
-void	new_room(t_rlist **lst, char *rp, t_byte *st)
+void	new_room(t_rlist **lst, char **rp, t_byte st)
 {
 	t_rlist *tm;
 	t_rlist	*n;
+	t_rlist *pre;
 	
-	tm = *lst;
-	if (!tm)
+	if (!*lst)
 	{
 		*lst = (t_rlist*)malloc(sizeof(t_rlist));
 		(*lst)->room.name = ft_strdup(rp[0]);
 		(*lst)->room.x = ft_atoi(rp[1]);
 		(*lst)->room.y = ft_atoi(rp[2]);
 		(*lst)->room.stat = st;
-		(*lst)->adia_rooms = NULL;
+		(*lst)->adia_list = NULL;
 		(*lst)->next = NULL;
 		return ;
 	}
-	while (tm)
-		tm = tm->next;
 	n = (t_rlist*)malloc(sizeof(t_rlist));
 	n->room.name = ft_strdup(rp[0]);
 	n->room.x = ft_atoi(rp[1]);
 	n->room.y = ft_atoi(rp[2]);
 	n->room.stat = st;
-	n->adia_rooms = NULL;
-	tm->next = n;
+	n->adia_list = NULL;
+	tm = *lst;
+	while (tm)
+	{
+		if (!ft_strcmp(tm->room.name, rp[0]))
+			input_error(NULL, &rp, lst);
+		if (tm->room.x == n->room.x && tm->room.y == n->room.y)
+			input_error(NULL, &rp, lst);
+		pre = tm;
+		tm = tm->next;
+	}
+	pre->next = n;
 	n->next = NULL;
 }
 
 void	new_link(t_rlist **lst, char **rp)
 {
-	t_rlist	*rm1;
-	t_rlist	*rm2;
-	t_room	*room;
-	t_room	*tmp;
+	t_rlist		*rm1;
+	t_rlist		*rm2;
+	t_adlist	*a1;
+	t_adlist	*a2;
 	
-	if (!(rm1 = find_room(lst, rp[0])))
-		error(NULL, &rp);
-	if (!(rm2 = find_room(lst, rp[1])))
-		error(NULL, &rp);
-	if (!(rm1->adia_list))
-	{
-		rm1->adia_list = (t_adlist*)malloc(sizeof(t_adlist));
-		rm1->adia_list = rm2;
-	}
-	if (!(rm2->adia_list))
-	{
-		rm2->adia_list = (t_adlist*)malloc(sizeof(t_adlist));
-		rm2->adia_list = rm1;
-	}
+	rm1 = find_room(lst, rp[0], UNDEF);
+	rm2 = find_room(lst, rp[1], UNDEF);
+	if (!rm1 || !rm2)
+		input_error(NULL, &rp, lst);
+	a1 = (t_adlist*)malloc(sizeof(t_adlist));
+	a1->room = &rm2->room;
+	a1->next = rm1->adia_list;
+	rm1->adia_list = a1;
 	
-	
+	a2 = (t_adlist*)malloc(sizeof(t_adlist));
+	a2->room = &rm1->room;
+	a2->next = rm2->adia_list;
+	rm2->adia_list = a2;
 }
 
 void	add_links(char *in, t_rlist **lst)
@@ -87,24 +137,15 @@ void	add_links(char *in, t_rlist **lst)
 	char	**rp;
 	
 	if (!(rp = ft_strsplit(in, '-')))
-		input_error(&in, &rp);
+		input_error(&in, &rp, lst);
 	i = 0;
 	while (rp[i++]);
-	(i != 3) ? input_error(&in, &rp) : 0;
-	i = 0;
-	while (rp[0][i] || rp[1][i])
-	{
-		if (rp[0][i] && !(ft_strchr(DEC, rp[0][i])))
-			input_error(&in, &rp);
-		else if (rp[1][i] && !(ft_strchr(DEC, rp[1][i])))
-			input_error(&in, &rp);
-		i++;
-	}
-	new_list(lst, rp);
+	(i != 3) ? input_error(&in, &rp, lst) : 0;
+	new_link(lst, rp);
 	while (*rp)
 	{
 		free(*rp);
-		rp+;
+		rp++;
 	}
 }
 
@@ -114,17 +155,17 @@ void	add_rooms(char *in, t_byte st, t_rlist **lst)
 	size_t	i;
 	
 	if (!(rp = ft_strsplit(in, ' ')))
-		input_error(&in, &rp);
+		input_error(&in, &rp, lst);
 	i = 0;
 	while (rp[i++]);
-	(i != 4) ? input_error(&in, &rp) : 0;
+	(i != 4) ? input_error(&in, &rp, lst) : 0;
 	i = 0;
 	while (rp[1][i] || rp[2][i])
 	{
-		if (rp[1][i] && !(ft_strchr(DEC, rp[1][i])))
-			input_error(&in, &rp);
-		else if (rp[2][i] && !(ft_strchr(DEC, rp[2][i])))
-			input_error(&in, &rp);
+		if (rp[1][i] && !ft_isdigit(rp[1][i]))
+			input_error(&in, &rp, lst);
+		if (rp[2][i] && !ft_isdigit(rp[2][i]))
+			input_error(&in, &rp, lst);
 		i++;
 	}
 	new_room(lst, rp, st);
@@ -134,55 +175,60 @@ void	add_rooms(char *in, t_byte st, t_rlist **lst)
 		rp++;
 	}
 }
+/*
+**	coord checker
+*/
 
 int		main(int ac, char **av)
 {
 	char		*input;
-	t_var		v;
+	t_var		_;
 	t_rlist		*lst;
+	char		*ants;
 
-	v.sz = 0;
-	v.room = 0;
-	v.link = 0;
-	v.stat = ROOM;
+	if (get_next_line(0, &ants) <= 0)
+		input_error(NULL, NULL, NULL);
+	ft_memset(&_, 0, sizeof(t_var));
 	lst = NULL;
 	while (get_next_line(0, &input) > 0)
 	{
-		ft_printf("%s\n",input);
+		ft_printf("%s  [%d]\n",input, _.stat);
 		if (*input == '#')
 		{
-			if (*(input + 1) == '#' && ft_strcmp(input, "##START") == 0)
-				v.stat = START;
-			if (*(input + 1) == '#' && ft_strcmp(input, "##END") == 0)
-				v.stat = END;
+			if (*(input + 1) == '#' && ft_strcmp(input + 2, "start") == 0)
+				_.stat = START;
+			if (*(input + 1) == '#' && ft_strcmp(input + 2, "end") == 0)
+				_.stat = END;
 		}
 		else if (!WSPACE(*input))
 		{
 			if (*(input + 1) != '-')
 			{
-				(v.room == 0 && v.link == 1) ? input_error(&input, NULL) : 0;
-				add_rooms(input, v.stat, lst);
-				(v.stat != ROOM) ? v.stat = ROOM : 0;
-				v.room = 1;
+				(_.room == 0 && _.link == 1) ? input_error(&input, NULL, &lst) : 0;
+				add_rooms(input, _.stat, &lst);
+				(_.stat != ROOM) ? _.stat = ROOM : 0;
+				_.room = 1;
 			}
 			else if (*(input + 1) == '-')
 			{
-				(v.room == 0 && v.link == 0) ? input_error(&input, NULL) : 0;
-				if (v.room == 1 && v.link == 0)
+				(_.room == 0 && _.link == 0) ? input_error(&input, NULL, &lst) : 0;
+				(_.stat != ROOM) ? input_error(&input, NULL, &lst) : 0;
+				if (_.room == 1 && _.link == 0)
 				{
-					v.link = 1;
-					v.room = 0;
+					_.link = 1;
+					_.room = 0;
 				}
-				add_links(input, lst);
+				add_links(input, &lst);
 			}
 			else
-				input_error(&input, NULL);
+				input_error(&input, NULL, &lst);
 		}
 		else
-			input_error(&input, NULL);
+			input_error(&input, NULL, &lst);
 		free(input);
 	}
-	
+	print(lst);
+	gen_paths(lst);
 	(void)ac;
 	(void)av;
 	return (1);
