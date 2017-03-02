@@ -10,30 +10,47 @@ t_tree	*new_node(t_rlist *head)
 	return (n);
 }
 
+
+static void	print(t_tree *h)
+{
+	t_tree *tr;
+	int		n;
+		
+	if (!h)
+		return ;
+	ft_printf(" %s ->",h->head->room.name);
+	tr = h->branch;
+	n = 0;
+	while (n < h->head->nr_ad)
+	{
+		print(tr + n);
+		ft_printf("\n\n\n");
+		n++;
+	}
+}
+
 int		generate(t_tree *h, t_room *r, t_rlist *list)
 {
 	t_adlist	*ad;
-	t_rlist		*rl;
-	t_tree		*bra;
+	int			n;
 
 	if (r->stat == END)
 		return (0);
 	if (!r->srch)
 	{
-	
-		h->head->srch = 1;
-		ad = rl->adia_list;
-		h->branch = (t_tree*)malloc(sizeof(t_tree) * (nr_ad + 1));
+		h->head->room.srch = 1;
+		ad = h->head->adia_list;
+		h->branch = (t_tree*)malloc(sizeof(t_tree) * (h->head->nr_ad + 1));
+		n = 0;
 		while (ad)
 		{
-			bra = (t_branch*)malloc(sizeof(t_branch));
-			bra->head = ad->room;
-			bra->next = h->branch;
-			h->branch = bra;
-			generate(bra, ad->room, list);
+			(h->branch + n)->head = find_room(&list, ad->room->name, UNDEF);
+			generate(h->branch + n, ad->room, list);
 			ad = ad->next;
+			n++;
 		}
-		h->head->srch = 0;
+		(h->branch + n)->head = NULL;
+		h->head->room.srch = 0;
 	}
 	return (1);
 }
@@ -45,9 +62,8 @@ t_tree	*gen_paths(t_rlist *list)
 	
 	st = find_room(&list, NULL, START);
 	tr = new_node(st);
-	//tr->head->srch = 1;
-	
-	//generate(tr, &st->room, list);
+	generate(tr, &st->room, list);
+	print(tr);
 	free(tr);
 	return (NULL);
 }
