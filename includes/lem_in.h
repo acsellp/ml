@@ -25,6 +25,7 @@ typedef struct		s_room
 	char			*name;
 	t_byte			stat;
 	t_byte			ants;
+	t_byte			srch; //
 }					t_room;
 typedef struct		s_adlist
 {
@@ -43,7 +44,6 @@ typedef struct		s_rlist
 typedef struct		s_tree
 {
 	t_room			*head;
-	t_byte			srch;
 	struct s_tree	*branch;
 }					t_tree;
 
