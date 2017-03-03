@@ -10,29 +10,39 @@ t_tree	*new_node(t_rlist *head)
 	return (n);
 }
 
-
-static void	print(t_tree *h)
+int 	print_tree(t_tree *h)
 {
 	t_tree *tr;
 	int		n;
 		
-	if (!h)
-		return ;
-	ft_printf(" %s ->",h->head->room.name);
+	if (!h || !h->head)
+		return 1;
+	ft_printf("\n     %s [%p][%p][%d]:",h->head->room.name, h->branch->head, h->head,h->n);
 	tr = h->branch;
 	n = 0;
-	while (n < h->head->nr_ad)
+	while (n < h->n)
 	{
-		print(tr + n);
-		ft_printf("\n\n\n");
+		ft_printf(" %s +", (tr + n)->head->room.name);
 		n++;
 	}
+	n = 0;
+	while (n < h->n)
+	{
+		ft_printf("\n %d ... [%p]",n, (tr + n)->branch);
+		ft_printf(" %s -> %s",h->head->room.name, (tr + n)->head->room.name);
+		if ((tr + n)->head->room.stat != END && (tr + n)->branch)
+			print_tree(tr + n);
+		n++;
+	}
+	ft_printf("   =\n\n\n");
+	return 0;
 }
 
 int		generate(t_tree *h, t_room *r, t_rlist *list)
 {
 	t_adlist	*ad;
 	int			n;
+	t_rlist		*rm;
 
 	if (r->stat == END)
 		return (0);
@@ -40,16 +50,27 @@ int		generate(t_tree *h, t_room *r, t_rlist *list)
 	{
 		h->head->room.srch = 1;
 		ad = h->head->adia_list;
+		ft_printf("\nhead %s ->  ", h->head->room.name);
 		h->branch = (t_tree*)malloc(sizeof(t_tree) * (h->head->nr_ad + 1));
 		n = 0;
 		while (ad)
 		{
-			(h->branch + n)->head = find_room(&list, ad->room->name, UNDEF);
-			generate(h->branch + n, ad->room, list);
+			
+			rm = find_room(&list, ad->room->name, UNDEF);
+			if (rm->room.srch != 1)
+			{
+				(h->branch + n)->head = rm;
+				//(h->branch + n)->head->room.srch = 1;
+				//ft_printf(" %s -> ",(h->branch + n)->head->room.name);
+				generate(h->branch + n, ad->room, list);
+				//(h->branch + n)->head->room.srch = 0;
+				n++;
+			}
 			ad = ad->next;
-			n++;
 		}
-		(h->branch + n)->head = NULL;
+		//ft_printf("\n\n\n");
+		h->n = n;
+		(h->branch + n + 1)->head = NULL;
 		h->head->room.srch = 0;
 	}
 	return (1);
@@ -63,7 +84,9 @@ t_tree	*gen_paths(t_rlist *list)
 	st = find_room(&list, NULL, START);
 	tr = new_node(st);
 	generate(tr, &st->room, list);
-	print(tr);
-	free(tr);
+	
+	//tr = (tr->branch)->branch;
+	print_tree(tr);
+	//free(tr);
 	return (NULL);
 }

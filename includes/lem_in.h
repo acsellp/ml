@@ -44,13 +44,13 @@ typedef struct		s_tree
 {
 	t_rlist			*head;
 	struct s_tree	*branch;
+	int				n;
 }					t_tree;
 
 /*
 **	main.c
 */
 t_rlist				*find_room(t_rlist **lst, char *name, t_byte stat);
-
 
 
 /*
