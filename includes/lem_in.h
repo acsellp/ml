@@ -8,7 +8,7 @@
 # define END 2
 # define START 1
 # define UNDEF 255
-# define WSPACE(x) ((x == '\0') || (x == '\t') || (x == ' ') || (x == '\v'))
+# define WSPACE(x) ((x == '\0') || (x == '\t') || (x == ' ') || (x == '\v') || (x == '\r'))
 
 typedef struct		s_var
 {
@@ -16,6 +16,7 @@ typedef struct		s_var
 	t_byte			link;
 	t_byte			room;
 	size_t			sz;
+	t_byte			st_e;
 }					t_var;
 
 typedef struct		s_room
@@ -45,12 +46,19 @@ typedef struct		s_tree
 	t_rlist			*head;
 	struct s_tree	*branch;
 	int				n;
+	t_byte			srch;
+	t_word			level;
 }					t_tree;
-
+typedef	struct		s_tlist
+{
+	t_tree			*head;
+	struct s_tlist	*next;
+}					t_tlist;
 /*
 **	main.c
 */
 t_rlist				*find_room(t_rlist **lst, char *name, t_byte stat);
+
 
 
 /*

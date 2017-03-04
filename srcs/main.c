@@ -207,9 +207,15 @@ int		main(int ac, char **av)
 		if (*input == '#')
 		{
 			if (*(input + 1) == '#' && ft_strcmp(input + 2, "start") == 0)
+			{
+				_.st_e++;
 				_.stat = START;
+			}
 			if (*(input + 1) == '#' && ft_strcmp(input + 2, "end") == 0)
+			{
+				_.st_e++;
 				_.stat = END;
+			}
 		}
 		else if (!WSPACE(*input))
 		{
@@ -238,6 +244,7 @@ int		main(int ac, char **av)
 			input_error(&input, NULL, &lst);
 		free(input);
 	}
+	(_.st_e < 2) ? input_error(&input, NULL, &lst) : 0;
 	print(lst);
 	gen_paths(lst);
 	(void)ac;
