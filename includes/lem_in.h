@@ -8,6 +8,8 @@
 # define END 2
 # define START 1
 # define UNDEF 255
+# define SEACHING 10
+# define MPATH 20
 # define WSPACE(x) ((x == '\0') || (x == '\t') || (x == ' ') || (x == '\v') || (x == '\r'))
 
 typedef struct		s_var
@@ -18,7 +20,6 @@ typedef struct		s_var
 	size_t			sz;
 	t_byte			st_e;
 }					t_var;
-
 typedef struct		s_room
 {
 	int				x;
@@ -40,7 +41,6 @@ typedef struct		s_rlist
 	int				nr_ad;
 	struct s_rlist	*next;
 }					t_rlist;
-
 typedef struct		s_tree
 {
 	t_rlist			*head;
