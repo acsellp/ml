@@ -89,6 +89,7 @@ t_byte	generate(t_tree *h, t_room *r, t_rlist *list, t_tlist **tlist)
 
 	if (r->stat == END || no_new_paths(h->head))
 		return (0);
+	ft_printf("%s\n",h->head->room.name);
 	if (!r->srch)
 	{
 		h->head->room.srch = 1;

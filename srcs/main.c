@@ -144,6 +144,7 @@ void	add_links(char *in, t_rlist **lst)
 	size_t	i;
 	char	**rp;
 	
+	ft_printf("\n\nin\n\n");
 	if (!(rp = ft_strsplit(in, '-')))
 		input_error(&in, &rp, lst);
 	i = 0;
@@ -155,6 +156,7 @@ void	add_links(char *in, t_rlist **lst)
 		free(*rp);
 		rp++;
 	}
+	ft_printf("\n\nout\n\n");
 }
 
 void	add_rooms(char *in, t_byte st, t_rlist **lst, int ants)
@@ -203,7 +205,6 @@ int		main(int ac, char **av)
 	lst = NULL;
 	while (get_next_line(0, &input) > 0)
 	{
-		ft_printf("%s  [%d]\n",input, _.stat);
 		if (*input == '#')
 		{
 			if (*(input + 1) == '#' && ft_strcmp(input + 2, "start") == 0)
@@ -219,14 +220,14 @@ int		main(int ac, char **av)
 		}
 		else if (!WSPACE(*input))
 		{
-			if (*(input + 1) != '-')
+			if (!ft_strchr(input, '-'))
 			{
 				(_.room == 0 && _.link == 1) ? input_error(&input, NULL, &lst) : 0;
 				add_rooms(input, _.stat, &lst, (_.stat == START) ? ft_atoi(ants) : 0);
 				(_.stat != ROOM) ? _.stat = ROOM : 0;
 				_.room = 1;
 			}
-			else if (*(input + 1) == '-')
+			else if (ft_strchr(input, '-'))
 			{
 				(_.room == 0 && _.link == 0) ? input_error(&input, NULL, &lst) : 0;
 				(_.stat != ROOM) ? input_error(&input, NULL, &lst) : 0;
