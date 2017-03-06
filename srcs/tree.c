@@ -89,7 +89,6 @@ t_byte	generate(t_tree *h, t_room *r, t_rlist *list, t_tlist **tlist)
 
 	if (r->stat == END || no_new_paths(h->head))
 		return (0);
-	ft_printf("%s\n",h->head->room.name);
 	if (!r->srch)
 	{
 		h->head->room.srch = 1;
@@ -311,8 +310,6 @@ int 	define_paths(t_tree *h, t_rlist *end)
 	return (0);
 }
 
-
-
 int		gen_paths(t_rlist *list)
 {
 	t_tree	*tr;
@@ -320,7 +317,6 @@ int		gen_paths(t_rlist *list)
 	t_rlist	*end;
 	t_tlist	*tlist;
 	int		n;
-
 	
 	st = find_room(&list, NULL, START);
 	if (!st->adia_list)
@@ -331,21 +327,16 @@ int		gen_paths(t_rlist *list)
 	tr->srch = 0;
 	tr->level = 1;
 	tlist = NULL;
-	ft_printf("\n generate \n");
+	//ft_printf("\n generate \n");
 	generate(tr, &st->room, list, &tlist);
-	ft_printf("\n /generate\n");
+	//ft_printf("\n /generate\n");
 
 	//print__path(tr, UNDEF);
-	ft_putstr("\n\n==================\n==================\n==================\n==================\n\n\n\n\n");
 	min_path(tr);
 	//print__path(tr, 1);
 	
-	
-	
 
-	if (tr->srch == 1)
-		ft_printf(" \n there are paths \n\n\n");
-	else
+	if (tr->srch != 1)
 	{
 		ft_printf("\n there are no paths\n\n\n");
 		return (0);
@@ -357,12 +348,14 @@ int		gen_paths(t_rlist *list)
 		define_paths(tr, end);
 	
 	//print__path(tr, MPATH);
-	ft_printf("%d\n\n\n",st->room.ants);
+//	ft_printf("%d\n\n\n",st->room.ants);
 	if (st->room.ants == 0)
 		return (0);
+	ft_putchar('\n');
 	gshdone(tr, st->room.ants, end, list);
 	
 	del_tree(tlist);
 	free(tr);
+	visu(list);
 	return (1);
 }
