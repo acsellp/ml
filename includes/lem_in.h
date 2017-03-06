@@ -47,7 +47,7 @@ typedef struct		s_tree
 	struct s_tree	*branch;
 	int				n;
 	t_byte			srch;
-	t_word			level;
+	t_dword			level;
 }					t_tree;
 typedef	struct		s_tlist
 {

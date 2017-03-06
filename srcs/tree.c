@@ -1,5 +1,31 @@
 #include "lem_in.h"
 
+int 	get_max_level(t_tree *h)
+{
+	int		lvl;
+	int		n;
+	int		tm;
+
+	if (!h || !h->head || !h->branch)
+		return (0);
+	lvl = 0;
+	tm = 0;
+	n = 0;
+	while (n < h->n)
+	{
+		if ((h->branch + n)->head->room.stat == END)
+			return ((int)h->level);
+		if ((h->branch + n)->srch == 1 && (h->branch + n)->branch)
+		{
+			tm = get_max_level(h->branch + n);
+			if (tm > lvl)
+				lvl = tm;
+		}
+		n++;
+	}
+	return (lvl);
+}
+
 int		abs(int n)
 {
 	if (n < 0)
@@ -83,7 +109,6 @@ t_byte	generate(t_tree *h, t_room *r, t_rlist *list, t_tlist **tlist)
 			ad = ad->next;
 		}
 		h->n = n;
-		//(h->branch + n + 1)->head = NULL;
 		h->head->room.srch = 0;
 	}
 	return (1);
@@ -269,11 +294,18 @@ int 	define_paths(t_tree *h, t_rlist *end)
 			return (1);
 		}
 		if (h->branch + n && (h->branch + n)->srch == 1 && (h->branch + n)->head->room.srch != MPATH)
-			if (abs((h->branch + n)->head->room.x - end->room.x) <= minx \
-				&& abs((h->branch + n)->head->room.y - end->room.y) <= miny)
-				pos = n;
+		
+			{
+				minx = get_max_level(h->branch + n);
+				if (minx < miny)
+				{
+					miny = minx;
+					pos = n;
+				}
+			}
 		n++;
 	}
+	(h->branch + pos)->head->room.srch = MPATH;
 	define_paths(h->branch + pos, end);
 	return (0);
 }
@@ -301,6 +333,8 @@ t_tree	*gen_paths(t_rlist *list)
 	ft_putstr("\n\n==================\n==================\n==================\n==================\n\n\n\n\n");
 	min_path(tr);
 	print__path(tr, 1);
+	
+	ft_printf("\n max level is %d\n",get_max_level(tr));
 	if (tr->srch == 1)
 		ft_printf(" \n there are paths \n\n\n");
 	else
@@ -308,6 +342,7 @@ t_tree	*gen_paths(t_rlist *list)
 		ft_printf("\n there are no paths\n\n\n");
 		return (NULL);
 	}
+	
 	end = find_room(&list, NULL, END);
 	n = tr->n;
 	while (n--)
