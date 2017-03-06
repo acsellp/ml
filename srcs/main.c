@@ -244,9 +244,10 @@ int		main(int ac, char **av)
 			input_error(&input, NULL, &lst);
 		free(input);
 	}
-	(_.st_e < 2) ? input_error(&input, NULL, &lst) : 0;
+	(_.st_e != 2) ? input_error(&input, NULL, &lst) : 0;
 	print(lst);
-	gen_paths(lst);
+	if (!(gen_paths(lst)))
+		input_error(&input, NULL, &lst);
 	(void)ac;
 	(void)av;
 	return (1);

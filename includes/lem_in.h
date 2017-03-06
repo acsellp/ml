@@ -64,7 +64,7 @@ t_rlist				*find_room(t_rlist **lst, char *name, t_byte stat);
 /*
 **	tree.c
 */
-t_tree				*gen_paths(t_rlist *list);
+int					gen_paths(t_rlist *list);
 
 
 
