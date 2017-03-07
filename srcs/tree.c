@@ -310,6 +310,7 @@ int 	define_paths(t_tree *h, t_rlist *end)
 	return (0);
 }
 
+<<<<<<< HEAD
 void	pad_sp(int lvl, int bars)
 {
 	int l;
@@ -375,6 +376,8 @@ int 	print_tree(t_tree *h, int lvl)
 	return (0);
 }
 
+=======
+>>>>>>> 5267c6aff5583c4eef7515da56b91226e8ce6758
 int		gen_paths(t_rlist *list)
 {
 	t_tree	*tr;
@@ -392,17 +395,21 @@ int		gen_paths(t_rlist *list)
 	tr->srch = 0;
 	tr->level = 1;
 	tlist = NULL;
-	ft_printf("\n generate \n");
+	//ft_printf("\n generate \n");
 	generate(tr, &st->room, list, &tlist);
-	ft_printf("\n /generate\n");
+	//ft_printf("\n /generate\n");
 
+<<<<<<< HEAD
 
 	min_path(tr);
+=======
+	//print__path(tr, UNDEF);
+	min_path(tr);
+	//print__path(tr, 1);
+>>>>>>> 5267c6aff5583c4eef7515da56b91226e8ce6758
 	
 
-	if (tr->srch == 1)
-		ft_printf(" \n there are paths \n\n\n");
-	else
+	if (tr->srch != 1)
 	{
 		ft_printf("\n there are no paths\n\n\n");
 		return (0);
@@ -413,13 +420,20 @@ int		gen_paths(t_rlist *list)
 	while (n--)
 		define_paths(tr, end);
 	
+<<<<<<< HEAD
 	print_tree(tr, 0);
 	ft_printf("\n\n\n");
+=======
+	//print__path(tr, MPATH);
+//	ft_printf("%d\n\n\n",st->room.ants);
+>>>>>>> 5267c6aff5583c4eef7515da56b91226e8ce6758
 	if (st->room.ants == 0)
 		return (0);
+	ft_putchar('\n');
 	gshdone(tr, st->room.ants, end, list);
 	
 	del_tree(tlist);
 	free(tr);
+	visu(list);
 	return (1);
 }

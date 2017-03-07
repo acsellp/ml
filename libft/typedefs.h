@@ -24,6 +24,7 @@ typedef	unsigned char		t_byte;
 typedef	unsigned short		t_word;
 typedef	unsigned long		t_dword;
 typedef	unsigned long long	t_qword;
+typedef	char*				t_str;
 # define INT_MAX 2147483647
 # define INT_MIN -2147483648
 # define UINT_MAX 4294967295

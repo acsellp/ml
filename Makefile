@@ -1,6 +1,6 @@
 NAME = lem
 
-SRCS = srcs/main.c srcs/tree.c
+SRCS = srcs/main.c srcs/tree.c srcs/visu.c
 
 INCL = -I ./includes -I./libft
 

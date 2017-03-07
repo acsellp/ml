@@ -54,6 +54,10 @@ typedef	struct		s_tlist
 	t_tree			*head;
 	struct s_tlist	*next;
 }					t_tlist;
+typedef	struct		s_map
+{
+	char			*str;
+}					t_map;
 /*
 **	main.c
 */
@@ -67,5 +71,10 @@ t_rlist				*find_room(t_rlist **lst, char *name, t_byte stat);
 int					gen_paths(t_rlist *list);
 
 
+
+/*
+**	visu.c
+*/
+void				visu(t_rlist *rlist);
 
 #endif
