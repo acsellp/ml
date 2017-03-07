@@ -89,7 +89,6 @@ t_byte	generate(t_tree *h, t_room *r, t_rlist *list, t_tlist **tlist)
 
 	if (r->stat == END || no_new_paths(h->head))
 		return (0);
-	ft_printf("%s\n",h->head->room.name);
 	if (!r->srch)
 	{
 		h->head->room.srch = 1;
@@ -311,7 +310,70 @@ int 	define_paths(t_tree *h, t_rlist *end)
 	return (0);
 }
 
+void	pad_sp(int lvl, int bars)
+{
+	int l;
+	
+	l = lvl;
+	while (l--)
+	{
+		if (bars & 0x00001)
+			ft_printf("    │");
+		else
+			ft_printf("    ");
+		bars >>= 1;
+	}
+}
 
+int		check_adiacent_node(t_tree *h, int n)
+{
+	while (n < h->n)
+	{
+		if (h->branch + n && (h->branch + n)->srch == MPATH)
+			return (1);
+		n++;
+	}
+	return (0);
+}
+
+int 	print_tree(t_tree *h, int lvl)
+{
+	int		n;
+	int		l;
+
+	if (!h || !h->head)
+		return (1);
+	n = 0;
+	if (h->head->room.stat == START)
+		pad_sp(h->level, lvl);
+	ft_printf("%s\n", h->head->room.name);
+	l = lvl;
+	n = 0;
+	while (n < h->n)
+	{
+		if ((h->branch + n)->srch == MPATH)
+		{
+			pad_sp(h->level, lvl);
+			if (!check_adiacent_node(h, n + 1))
+			{
+				lvl = lvl << 0;
+				ft_printf("└───");
+			}
+			else
+			{
+				if (lvl == 0)
+					lvl += 1;
+				else
+					lvl <<= 1;
+				ft_printf("├───");
+			}
+			print_tree(h->branch + n, lvl);
+			lvl = 0;
+		}
+		n++;
+	}
+	return (0);
+}
 
 int		gen_paths(t_rlist *list)
 {
@@ -320,7 +382,6 @@ int		gen_paths(t_rlist *list)
 	t_rlist	*end;
 	t_tlist	*tlist;
 	int		n;
-
 	
 	st = find_room(&list, NULL, START);
 	if (!st->adia_list)
@@ -335,12 +396,8 @@ int		gen_paths(t_rlist *list)
 	generate(tr, &st->room, list, &tlist);
 	ft_printf("\n /generate\n");
 
-	//print__path(tr, UNDEF);
-	ft_putstr("\n\n==================\n==================\n==================\n==================\n\n\n\n\n");
+
 	min_path(tr);
-	//print__path(tr, 1);
-	
-	
 	
 
 	if (tr->srch == 1)
@@ -356,8 +413,8 @@ int		gen_paths(t_rlist *list)
 	while (n--)
 		define_paths(tr, end);
 	
-	//print__path(tr, MPATH);
-	ft_printf("%d\n\n\n",st->room.ants);
+	print_tree(tr, 0);
+	ft_printf("\n\n\n");
 	if (st->room.ants == 0)
 		return (0);
 	gshdone(tr, st->room.ants, end, list);
